@@ -10,3 +10,4 @@ vbmg natnetwork modify \
 vbmg natnetwork modify \
   --netname net_4640 --port-forward-4 "https:tcp:[]:50443:[192.168.250.10]:443"
 vbmg natnetwork start --netname net_4640
+
