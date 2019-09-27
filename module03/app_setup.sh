@@ -34,7 +34,7 @@ install_app () {
 	su - todo-app;
 	mkdir app
 	cd app;
-	git clone https://github.com/timoguic/ACIT4640-todo-app.git .;
+	git clone https://github.com/timoguic/ACIT4640-todo-app.git;
 	npm install;
 	cp -f ../setup_files/database.js config/database.js;
 	curl -s localhost:8080/api/todos | jq;
