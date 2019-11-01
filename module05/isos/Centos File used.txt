@@ -1,0 +1,3 @@
+name of the centos I used was
+
+CentOS-7-x86_64-Minimal-1810.iso
