@@ -1,0 +1,122 @@
+---
+- hosts: todoapp
+  vars: 
+    password: $6$3Gqjm2MJZBnYsnY3$CLojlpdQ4xOuUHz5fAjxcb8RecemGeAO14XuC/xvnvrWBVqiJoH956wttngBAgvIf0tIYgPIP8wqXX2hOUwGg.
+  tasks:
+    - name: Enable HTTP
+      become: yes
+      firewalld:
+        service: http
+        immediate: yes
+        permanent: yes
+        state: enabled
+    - name: Enable HTTPS
+      become: yes
+      firewalld:
+        service: https
+        immediate: yes
+        permanent: yes
+        state: enabled
+    - name: Enable SSH
+      become: yes
+      firewalld:
+        service: ssh
+        immediate: yes
+        permanent: yes
+        state: enabled
+    - name: Copy key file to .shh
+      become: yes
+      template:
+        src: ../files/acit_admin_id_rsa
+        dest: ~admin/.ssh/authorized_keys
+    - name: Install nginx
+      become: yes
+      package:
+        name: nginx
+        state: installed
+    - name: Copy nginx config file to VM
+      become: yes
+      copy:
+        src: ../files/nginx.conf
+        dest: /etc/nginx/nginx.conf
+        mode: '0644'
+    - name: Enable and start nginx
+      become: yes
+      service:
+        name: nginx
+        enabled: yes
+        state: started
+    - name: Install MongoDB Server
+      become: yes
+      package:
+        name: mongodb-server
+        state: installed
+    - name: Install NodeJS
+      become: yes
+      package:
+        name: nodejs
+        state: installed
+    - name: Install Git
+      become: yes
+      package:
+        name: git
+        state: installed
+    - name: Create todoapp user
+      become: yes
+      user:
+        name: todoapp
+        password: "{{ password }}"
+    - name: Disable SELinux
+      become: yes
+      selinux:
+        state: disabled
+    - name: Clone todoapp git repo
+      become: yes
+      git:
+        repo: 'https://github.com/timoguic/ACIT4640-todo-app.git'
+        dest: /home/todoapp/app
+    - name: Recursively change ownership of todoapp to todoapp user
+      become: yes
+      file:
+        path: /home/todoapp/app
+        state: directory
+        recurse: yes
+        owner: todoapp
+        group: todoapp
+        mode: '0755'
+    - name: Change permissions of todoapp
+      become: yes
+      file:
+        path: /home/todoapp
+        mode: 'a+rx'
+    - name: Copy database file to VM
+      become: yes
+      copy:
+        src: ../files/database.js
+        dest: /home/todoapp/app/config/database.js
+    - name: Enable and start mongoDB
+      become: yes
+      service:
+        name: mongod
+        enabled: yes
+        state: started
+    - name: npm install todoapp packages
+      become: yes
+      npm:
+        path: /home/todoapp/app
+    - name: Copy todoapp config file to VM
+      become: yes
+      copy:
+        src: ../files/todoapp.service
+        dest: /lib/systemd/system
+    - name: systemd reload
+      become: yes
+      systemd:
+        daemon_reload: yes
+    - name: Enable todoapp service
+      become: yes
+      service:
+        name: todoapp
+        enabled: yes
+        state: started
+      
