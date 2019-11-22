@@ -1,0 +1,50 @@
+
+---
+- name: Open HTTP
+  become: yes
+  firewalld:
+    service: http
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: Open HTTPS
+  become: yes
+  firewalld:
+    service: https
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+
+- name: Open SSH
+  become: yes
+  firewalld:
+    service: ssh
+    zone: public
+    permanent: yes
+    state: enabled
+    immediate: yes
+    
+- name: Install nginx
+  become: yes
+  package:
+    name: nginx
+    state: installed
+
+- name: Copy conf j2 file
+  become: yes
+  template:
+    src: nginx_conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: nginx
+    group: nginx
+
+- name: Reload nginx
+  become: yes
+  service:
+    name: nginx
+    state: started
+    enabled: yes  
+

@@ -1,0 +1,11 @@
+---
+- include_role:
+    name: mongo_server
+- include_role:
+    name: nginx
+- include_role:
+    name: nodejs
+- name: Disable SELinux
+  become: yes
+  selinux:
+    state: disabled

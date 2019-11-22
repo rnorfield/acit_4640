@@ -1,0 +1,9 @@
+---
+- hosts: todoapp
+  tasks:
+    - name: Include the role 'base' for setting up machine
+      include_role:
+        name: base
+    - name: Include the role 'todoapp' for seting up the todoapp service
+      include_role:
+        name: todoapp
